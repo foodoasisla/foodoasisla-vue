@@ -1,19 +1,24 @@
-'use strict';
-
-Vue.component('location-list-item', {
-	props: ['location'],
-	template: `
-    <li v-bind:class="[location.categoryCode, location.parentCategoryCode]">
-        <a v-on:click="showLocationDetails" v-bind:href="locationURI" class="location-summary">
+<template>
+	<li v-bind:class="[location.categoryCode, location.parentCategoryCode]">
+		<a v-on:click="showLocationDetails" v-bind:href="locationURI" class="location-summary">
 			<img v-bind:src="'/assets/images/home/' + location.categoryCode + '.svg'" width="100" alt="" />
 			<h2>{{ location.name }}</h2>
-            <p class="address">{{ location.address_1 }}<br />{{ location.address_2 }}</p>
-            <p class="type">{{ location.category }}</p>
-            <p v-if="isOpenNow" class="open">Open Now</p>
-            <p class="distance"><span>{{ distance }}</span> <abbr title="miles">mi</abbr></p>
-        </a>
-    </li>
-	`,
+			<p class="address">{{ location.address_1 }}<br />{{ location.address_2 }}</p>
+			<p class="type">{{ location.category }}</p>
+			<p v-if="isOpenNow" class="open">Open Now</p>
+			<p class="distance"><span>{{ distance }}</span> <abbr title="miles">mi</abbr></p>
+		</a>
+	</li>
+</template>
+
+<script>
+export default {
+	props: {
+		location: {
+			type: Object,
+			required: true
+		}
+	},
 	methods: {
 		showLocationDetails: function (e) {
 
@@ -32,7 +37,7 @@ Vue.component('location-list-item', {
 		locationURI: function() {
 			return this.location.uri + window.location.search
 		},
- 		isOpenNow: function () {
+		isOpenNow: function () {
 			for (let index = 0; index < this.location.hours.length; index++) {
 				if (window.oasis.isOpenNow(this.location.hours[index])) {
 					return true
@@ -41,4 +46,6 @@ Vue.component('location-list-item', {
 			return false
 		}
 	}
-})
+}
+</script>
+

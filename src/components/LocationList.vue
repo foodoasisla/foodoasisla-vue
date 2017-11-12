@@ -1,8 +1,4 @@
-'use strict';
-
-Vue.component('location-list', {
-	props: ['locations'],
-	template: `
+<template>
 	<ul class="location-list">
 		<!--
 			Now we provide each location-item with the location object
@@ -17,10 +13,26 @@ Vue.component('location-list', {
 			v-on:selected="onSelected">
 		</li>
 	</ul>
-	`,
+</template>
+
+<script>
+import LocationListItem from './LocationListItem.vue'
+
+export default {
+	components: {
+		LocationListItem
+	},
+	props: {
+		locations: {
+			type: Array,
+			required: true
+		}
+	},
 	methods: {
 		onSelected: function (location) {
 			this.$emit('selected', location)
 		}
 	}
-})
+}
+</script>
+

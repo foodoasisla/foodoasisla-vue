@@ -1,8 +1,4 @@
-'use strict';
-
-Vue.component('location-details', {
-	props: ['location'],
-	template: `
+<template>
 	<div class="location-summary-container">
 		<div v-bind:class="[location.categoryCode, location.parentCategoryCode]">
 			<!--
@@ -94,7 +90,16 @@ Vue.component('location-details', {
 			</section>
 		</div>
 	</div>
-	`,
+</template>
+
+<script>
+export default {
+	props: {
+		location: {
+			type: Object,
+			required: true
+		}
+	},
 	data: function() {
 		return {
 			shareableLinkActive: false,
@@ -221,4 +226,5 @@ Vue.component('location-details', {
 			return false
 		}
 	}
-})
+}
+</script>

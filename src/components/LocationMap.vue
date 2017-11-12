@@ -1,5 +1,11 @@
-'use strict';
+<template>
+	<div>
+		<p class="action search-this-area"><a href="" v-on:click.prevent="searchThisArea">Search this area</a></p>
+		<div id="map" class="map-container" v-bind:class="{ active: mapBoxSupported }"></div>
+	</div>
+</template>
 
+<script>
 window.oasis = window.oasis || {};
 
 // Define the icons
@@ -98,14 +104,19 @@ window.oasis.FOOD_DESERTS_LAYER = {
 	'source-layer': 'USDA_Food_Desert_Tracts_2010-65gavx'
 };
 
-Vue.component('location-map', {
-	props: ['locations', 'selectedLocation', 'token', 'youAreHere'],
-	template: `
-	<div>
-		<p class="action search-this-area"><a href="" v-on:click.prevent="searchThisArea">Search this area</a></p>
-		<div id="map" class="map-container" v-bind:class="{ active: mapBoxSupported }"></div>
-	</div>
-	`,
+export default {
+	props: {
+		youAreHere: Object,
+		selectedLocation: Object,
+		locations: {
+			type: Array,
+			required: true
+		},
+		token: {
+			type: String,
+			required: true
+		}
+	},
 	mounted: function () {
 
 		/* SHIM: Wait a moment before rendering the map, so the size will be correct */
@@ -164,8 +175,6 @@ Vue.component('location-map', {
 			}
 		}
 	},
-	computed: {
-	},
 	methods: {
 		mapBoxSupported() {
 			return 'mapboxgl' in window && mapboxgl.supported()
@@ -202,10 +211,10 @@ Vue.component('location-map', {
 					window.oasis.map.addControl(new mapboxgl.NavigationControl( { position: 'top-right' } )); // position is optional
 
 					// Draw food desert census tracts
-					//if (window.oasis.getParameterByName('deserts') === '1') {
+					if (window.oasis.getParameterByName('deserts') === '1') {
 						window.oasis.map.addSource('Food Deserts', window.oasis.FOOD_DESERTS_SOURCE);
 						window.oasis.map.addLayer(window.oasis.FOOD_DESERTS_LAYER);
-					//}
+					}
 					//window.oasis.map.resize()
 				});
 
@@ -219,7 +228,6 @@ Vue.component('location-map', {
 				}.bind(this));
 
 				window.oasis.map.on('dragend', this.showSearchThisArea.bind(this));
-				//map.on('zoomend', showSearchThisArea);
 			}
 		},
 		updateMarkers: function () {
@@ -259,39 +267,8 @@ Vue.component('location-map', {
 				document.body.classList.add('hidden-marker-labels');
 			}
 		},
-		// showLocationSummary: function (location, simulated) {
-		// 	// let item = window.oasis.createListItem(location, 'div', true);
-		// 	// let summary = document.getElementById('map-location-summary');
-		// 	// summary.innerHTML = '';
-		// 	// summary.appendChild(item);
-		// 	// document.querySelector('.location-list').classList.add('has-map-location-summary');
-
-		// 	this.$emit('selected', location)
-
-		// 	//window.oasis.map.resize()
-		// 	//document.querySelector('.location-summary-container').scrollTo(0, 0);
-
-		// 	//const url = item.querySelector('a').getAttribute('href');
-		// 	// console.log(url);
-		// 	//window.history.replaceState({}, null, url);
-		// 	// console.log(item.querySelector('a').href);
-
-		// 	// SHIM: Center the marker and zoom in
-		// 	if (simulated) {
-		// 		// map.setCenter([location.longitude, location.latitude]);
-		// 		// map.setZoom(14);
-		// 		window.oasis.map.flyTo({ center: [location.longitude, location.latitude] });
-		// 	}
-		// },
 		resetCurrentMarker: function () {
 			if (this.currentMarker) this.currentMarker.classList.remove('active')
-
-			//let summary = document.getElementById('map-location-summary');
-			//summary.innerHTML = '';
-
-			//document.querySelector('.location-list').classList.remove('has-map-location-summary');
-			//this.$emit('reset')
-			//window.oasis.map.resize();
 		},
 		updateCurrentMarker: function (location) {
 			// console.log('updateCurrentMarker: ' + location.name)
@@ -301,13 +278,6 @@ Vue.component('location-map', {
 			this.currentMarker = this.getMarkerFromLocation(location);
 			this.currentMarker.classList.add('active');
 		},
-		// getMarkerFromLocation: function (location) {
-
-		// 	// Assume that the locations array is in the same order as the markers array
-		// 	for (let index = 0; index < this.locations.length; index++) {
-		// 		if (this.locations[index] === location) return this.markers[index]
-		// 	}
-		// },
 		getMarkerFromLocation: function (location) {
 
 			// Assume that the markers array is in the same order as the locations array
@@ -353,16 +323,11 @@ Vue.component('location-map', {
 				.addTo(window.oasis.map);
 
 			let handleMapClick = function(e) {
-				//let simulated = (e.clientX === 0 && e.clientY === 0); // This event was triggered by an element in the list, and not an actual click on the marker.
-
 				if (this.dragging) return
-
-				//this.updateCurrentMarker(location)
 
 				this.skipNextMoveMap = true // Avoid moving the map while the user pressing different points
 
 				this.$emit('selected', location)
-				//this.showLocationSummary(location, simulated);
 			}.bind(this)
 
 			marker.addEventListener('click', handleMapClick)
@@ -377,11 +342,6 @@ Vue.component('location-map', {
 			return coordinates;
 		},
 		removeAllMarkers: function () {
-			// for (let index = 0; index < this.markers.length; index++) {
-			// 	this.markers[index].remove();
-			// }
-			// this.markers = [];
-
 			while (this.markers.length > 0) {
 				this.markers.pop().remove()
 			}
@@ -435,13 +395,7 @@ Vue.component('location-map', {
 
 			window.oasis.map.fitBounds(mapLngLatBounds, { padding: 10, easing: function() { return 1; } });
 		}
-		// simulateMapPointClick: function (data) {
-		// 	for (let index = 0; index < this.markers.length; index++) {
-		// 		if (this.markers[index]._data.name === data.name) {
-		// 			this.markers[index].click();
-		// 			return true;
-		// 		}
-		// 	}
-		// }
 	}
-})
+}
+</script>
+

@@ -1,8 +1,4 @@
-'use strict';
-
-Vue.component('location-list-nav', {
-	props: ['searchAreaName'],
-	template: `
+<template>
 	<div>
 		<nav class="secondary-nav location-list-nav">
 				
@@ -37,9 +33,22 @@ Vue.component('location-list-nav', {
 			<p class="back"><a href="" v-on:click="goBack"><img src="/assets/images/icons/back.svg"> <span>Back to all results</span></a></p>
 		</nav>
 	</div>
-	`,
-	mounted: function () {
+</template>
 
+<script>
+export default {
+	props: {
+		searchAreaName: String
+	},
+	methods: {
+		goBack: function (e) {
+			// If the user wants to open the link in a new window, let the browser handle it.
+			if (e && (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey)) return;
+
+			this.$emit('back')
+
+			e.preventDefault();
+		}
 	},
 	computed: {
 		queryString: function() {
@@ -66,15 +75,7 @@ Vue.component('location-list-nav', {
 			}
 			return 'Everything'
 		}
-	},
-	methods: {
-		goBack: function (e) {
-			// If the user wants to open the link in a new window, let the browser handle it.
-			if (e && (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey)) return;
-
-			this.$emit('back')
-
-			e.preventDefault();
-		}
 	}
-})
+}
+</script>
+
