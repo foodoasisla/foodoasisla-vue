@@ -54,8 +54,8 @@ module.exports = {
   performance: {
     hints: false
   },
-  devtool: '#eval-source-map',
-  plugins: [
+  devtool: '#eval-source-map'
+/*  plugins: [
     // copy custom static assets
     new CopyWebpackPlugin([
       {
@@ -64,7 +64,7 @@ module.exports = {
         ignore: ['.*']
       }
     ])
-  ]
+  ]*/
 }
 
 if (process.env.NODE_ENV === 'production') {
